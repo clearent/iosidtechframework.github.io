@@ -65,6 +65,20 @@
         - (void)feedback:(ClearentFeedback *)clearentFeedback;
     </code></pre>
     
+    
+    <p>Monitor for when the device is connected. This is useful when showing the connection status.
+    </p>
+    <pre><code>
+        -(void) deviceConnected;
+    </code></pre>
+  
+  <p>Monitor for when the device is disconnected. This is useful when showing the connection status.
+  </p>
+  <pre><code>
+      -(void) deviceDisconnected;
+  </code></pre>
+  
+    
     <p>Define the framework objects to interact with</p>
     <pre><code>
         Clearent_VP3300 *clearentVP3300;
