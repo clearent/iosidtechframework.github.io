@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>IDTech iOS Framework by Clearent</title>
+    <link rel="shortcut icon" type="image/png" href="images/favicon.ico"/>
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/github-light.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>IDTech iOS Framework</h1>
+        <p>Objective C Example</p>
+
+        <menu>
+            <a href="index.html">Overview</a>
+            <a href="bluetooth.html">Bluetooth</a>
+            <a href="dependencymanagement.html">Dependency Management</a>
+            <a class="active" href="objectivec.html">Objective C Example</a>
+        </menu>
+
+      </header>
+      
+      
+      
+      <section>
+          <h3>Set up</h3>
+        <p>The code snippets were pulled from our <a href="https://github.com/clearent/IDTech_VP3300_Objc_Demo">Demo</a></p>
+
+    
+        <p>Import the framework header </p>
+        <pre><code>
+        #import &lt;ClearentIdtechIOSFramework/ClearentIdtechIOSFramework.h&gt;
+        </code></pre>
+        
+    
+
+    <p>Implement the public delegate - Clearent_Public_IDTech_VP3300_Delegate</p>
+    <pre><code>
+        @interface ViewController : UIViewController&lt;UIAlertViewDelegate,Clearent_Public_IDTech_VP3300_Delegate, UIActionSheetDelegate,MFMailComposeViewControllerDelegate&gt;
+    </code></pre>
+    
+    <p>Implement the ClearentManualEntryDelegate. This is used as a back up in case the reader cannot interact with the card.</p>
+    
+    <pre><code>
+        @interface ViewController : UIViewController&lt;UIAlertViewDelegate,Clearent_Public_IDTech_VP3300_Delegate, UIActionSheetDelegate,MFMailComposeViewControllerDelegate&gt;,ClearentManualEntryDelegate
+    </code></pre>
+    
+    
+    <p> Implement the successfulTransactionToken method. This method returns a token which represents the credit card and the current transaction request. The token can later be presented to run a payment transaction. When a card is processed (swipe or insert/dip of card with an emv chip), the framework will call successfulTransactionToken method when tokenization is successful.</p>
+    <pre><code>
+        - (void)successTransactionToken:(ClearentTransactionToken *)clearentTransactionToken;
+    </code></pre>
+    
+    <p>Monitor for errors. The feedback callback will return different types of messages. Some are meant to be shown to the User (user actions) because the framework
+    is intructing the User to do something (ex- start interacting with the reader- PRESS BUTTON ON READER, INSERT/SWIPE, etc). Some messages are just informational. Some are errors.
+    </p>
+    <pre><code>
+        - (void)feedback:(ClearentFeedback *)clearentFeedback;
+    </code></pre>
+    
+    <p>Define the framework objects to interact with</p>
+    <pre><code>
+        Clearent_VP3300 *clearentVP3300;
+        ClearentManualEntry *clearentManualEntry;
+    </code></pre>
+    
+      </section>
+      
+      <section>
+          <h3>Start a Transaction</h3>
+       
+    <p>Initialize the objects. Point to sandbox to test - gateway-sb.clearent.net. Point to prod prior to go live - gateway.clearent.net</p>
+    <pre><code>
+        ClearentVP3300Config *config = [[ClearentVP3300Config alloc]init];
+        [config setPublicKey:publicKey];
+        [config setClearentBaseUrl:baseURL];
+        config.contactAutoConfiguration = false;
+        config.contactlessAutoConfiguration = false;
+        config.contactless = true;
+        
+        clearentVP3300 = [[Clearent_VP3300 alloc]  initWithConnectionHandling:self clearentVP3300Configuration:config];
+        
+        clearentManualEntry = [[ClearentManualEntry alloc]  init];
+        [clearentManualEntry setClearentBaseUrl:baseURL];
+        [clearentManualEntry setPublicKey:publicKey];
+        
+    </code></pre>
+    
+    
+    <p>Create an object representing the payment request. Providing the amount is required for certain EMV checks.</p>
+    <pre><code>
+    
+    ClearentPayment *clearentPayment = [[ClearentPayment alloc] init];
+    [clearentPayment setAmount:theAmount];
+    clearentPayment.amtOther = 0;
+    clearentPayment.type = 0;
+    clearentPayment.timeout = 10;
+    clearentPayment.tags = nil;
+    clearentPayment.fallback = true;
+    clearentPayment.forceOnline = false;
+    
+    </code></pre>
+
+   
+   <p>Create an object representing the bluetooth connection. It is recommended the bluetooth friendly name is identified prior to starting transactions.
+   </p>
+   <pre><code>
+       ClearentConnection *clearentConnection = [[ClearentConnection alloc] initBluetoothWithFriendlyName:self.deviceFriendlyName];
+   </code></pre>
+   
+    <p>Start a transaction. The framework will connect to the reader and messages should start coming back in the feedback delegate. When the framework successfully secures the card data
+    it will callback to the successTransactionToken delegate.
+    </p>
+     <pre><code>
+         ClearentResponse *response = [clearentVP3300 startTransaction:clearentPayment clearentConnection:clearentConnection];
+         if (response.responseType != RESPONSE_SUCCESS) {
+             //Notify user the transaction could not be started.
+         }
+     </code></pre>
+     
+      
+     <p> When you are ready to process the payment, do a POST against endpoint /rest/v2/mobile/transactions/sale (for a sale). See <a href="http://api.clearent.com/swagger.html#!/Quest_API_Integration/Mobile_Transactions_using_SDKs/Mobile_Transactions">Mobile Gateway Documentation</a> for details. </p>
+
+      </section>
+      
+      
+      <section>
+          <h3>Start a Connection.</h3>
+       <p>Use this from your settings area to identify the reader. There can be potential messages coming back in the feedback delegate.</p>
+
+    <p>This will initiate a bluetooth search.</p>
+    <pre><code>
+        ClearentConnection *connection = [[ClearentConnection alloc] initBluetoothSearch];
+        [clearentVP3300 startConnection:connection];
+    </code></pre>
+    
+    <p>Implement this delegate. When a search is performed any readers it finds will be returned.</p>
+    <pre><code>
+        - (void) bluetoothDevices:(NSArray<ClearentBluetoothDevice> *)bluetoothDevices;
+    </code></pre>
+    
+      </section>
+      
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Clearent">Clearent</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

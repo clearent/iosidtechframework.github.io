@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>IDTech iOS Framework by Clearent</title>
+    <link rel="shortcut icon" type="image/png" href="images/favicon.ico"/>
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/github-light.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="wrapper">
+    <header>
+        <h1>IDTech iOS Framework</h1>
+        <p>Overview</p>
+
+        <menu>
+            <a class="active" href="index.html">Overview</a>
+            <a href="bluetooth.html">Bluetooth</a>
+            <a href="dependencymanagement.html">Dependency Management</a>
+            <a href="objectivec.html">Objective C Example</a>
+        </menu>        
+    </header>
+    <section>
+        <h3>IDTech iOS Framework Overview</h3>
+
+        <p>The IDTech iOS Framework gives your iOS App the ability to interact with an IDTech VP3300 Bluetooth credit card reader. The framework
+        handles the credit card data coming from the reader on your behalf by sending it to our servers and returning a secured JWT (json web token)
+        which you can present later to our mobile gateway endpoint for payment processing.
+        </p>
+
+        <h3>How it works</h3>
+
+        <p>IDTech provides a framework for interacting with their reader. Clearent has wrapped the framework so it can handle the sensitive card data as well
+        as provide a few extra methods for easier integration. The framework does not run the payment. It only secures the card data.
+        </p>
+        
+        
+        <h3>Recommended Implementation</h3>
+        
+        <p>The framework provides many capabilities but we have found the best implementation to be:</p>
+        
+        <ol>
+            <li>Identify the reader first. With all new technologies the challenge is to get the User up to speed on its use. Even though the framework supports searching for the bluetooth reader and running the transaction in the same flow, we recommend separating out the two concerns so the experience at the time of running a transaction , while the customer is present, is optimized. In your app, provide a separate settings section allowing the User to set up the reader. Let them initiate a bluetooth search and select from one or more found readers. Then save the bluetooth info they selected.
+            </li>
+            <li>Display the status of the reader connection.
+            </li>
+            <li>Provide the User with an interface to start the transaction.
+            </li>
+            <li>Provide the User with an interface to cancel the transaction.
+            </li>
+            <li>Display messages to the User coming back from the framework (feedback callback).
+            </li>
+            <li>From your settings area provide the ability to force a bluetooth disconnect.
+            </li>
+
+        </ol>
+
+    </section>
+    <footer>
+        <p>This project is maintained by <a href="https://github.com/Clearent">Clearent</a></p>
+
+        <p>
+            <small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a>
+            </small>
+        </p>
+    </footer>
+</div>
+<script src="javascripts/scale.fix.js"></script>
+
+</body>
+</html>

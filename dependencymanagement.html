@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>IDTech iOS Framework by Clearent</title>
+    <link rel="shortcut icon" type="image/png" href="images/favicon.ico"/>
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/github-light.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>IDTech iOS Framework</h1>
+        <p>Dependency Management</p>
+
+        <menu>
+            <a href="index.html">Overview</a>
+            <a href="bluetooth.html">Bluetooth</a>
+            <a class="active" href="dependencymanagement.html">Dependency Management</a>
+            <a href="objectivec.html">Objective C Example</a>
+        </menu>
+
+      </header>
+      <section>
+
+        <p></p>
+
+        <h3>Carthage</h3>
+
+        <ol>
+        <li>Install Carthage if you have not done so. ex - brew install carthage.</li>
+        <li>Add your github credentials to XCode.</li>
+        <li>Add a Cartfile to your project (at root).</li>
+        <li>Point to Clearent's github repository for this framework by adding the following to your Cartfile - github "clearent/ClearentIdtechIOSFramework" "2.0.6"</li>
+        <li>Run this command from your project's root folder. This command will pull down a copy of the Clearent Framework and build it locally under Carthage/Build. - carthage update</li>
+        <li>On your application targets’ General settings tab, in the Embedded Binaries section, drag and drop the Clearent Framework from the Carthage/Build folder.</li>
+        <li> Additionally, you'll need to copy debug symbols for debugging and crash reporting on OS X.
+            On your application target’s Build Phases settings tab, click the + icon and choose New Copy Files Phase.
+            Click the Destination drop-down menu and select Products Directory.
+            From the Clearent framework, drag and drop its corresponding dSYM file.</li>
+        <li>Build your app. The Clearent Framework should be available for use.</li>
+        </ol>
+    
+        
+        <h3>Cocoapod</h3>
+        <p>
+        Use our latest pod <a href="https://github.com/clearent/ClearentIdtechIOSFrameworkPod/releases/tag/2.0.26">2.0.26</a>
+        </p>
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Clearent">Clearent</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
