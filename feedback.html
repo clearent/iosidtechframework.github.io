@@ -1,0 +1,609 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>IDTech iOS Framework by Clearent</title>
+    <link rel="shortcut icon" type="image/png" href="images/favicon.ico"/>
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/github-light.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="wrapper">
+    
+    <header>
+        <h1>IDTech iOS Framework</h1>
+        <p>Feedback (User actions, info, and errors)</p>
+
+        <menu>
+            <a href="index.html">Overview</a>
+            <a href="bluetooth.html">Bluetooth</a>
+            <a href="dependencymanagement.html">Dependency Management</a>
+            <a href="objectivec.html">Objective C Example</a>
+            <a class="active" href="feedback.html">Feedback</a>
+        </menu>
+
+    </header>
+    
+    <section>
+        <h3>Overview</h3>
+        
+        
+        <p>The framework will send back messages related to bluetooth connectivity and when the User is interacting with the reader during a transaction. Some of these can be monitored and handled without the User's knowledge. The minimum feedback all Users should see are the User Actions since the framework can give feedback related to how they are interacting with the reader. An example would be if the User swiped a chip card or inserted a chip card wrong. Some of the informational messages are still helpful so if the design can represent those as well it is recommended.
+        </p>
+        
+        
+        <p>This enum defines the types of feedback.</p>
+        <pre><code>
+            typedef NS_ENUM(NSUInteger, CLEARENT_FEEDBACK_MESSAGE_TYPE) {
+                CLEARENT_FEEDBACK_USER_ACTION = 1,
+                CLEARENT_FEEDBACK_INFO = 2,
+                CLEARENT_FEEDBACK_BLUETOOTH = 3,
+                CLEARENT_FEEDBACK_ERROR = 4,
+                CLEARENT_FEEDBACK_TYPE_UNKNOWN = 0
+            };
+        </code></pre>
+        
+        
+                <table>
+                <thead>
+                <tr>
+                <td style="width: 30%;">Feedback Type</td>
+                <td style="width: 30%;">Feedback Enum</td>
+                <td style="width: 40%;">Notes</td>
+                
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <td style="width: 10%;">User Action</td>
+                    <td style="width: 20%;">CLEARENT_FEEDBACK_USER_ACTION</td>
+                    <td style="width: 70%;"><span class="type__monospace">The framework needs to communicate with the User as they interact with the reader. Or, the Clearent framework has considered it important enough to display now and not treat just as informational.</span></td>
+                    </tr>
+                    <tr>
+                    <td style="width: 10%;">General Information</td>
+                    <td style="width: 20%;">CLEARENT_FEEDBACK_INFO</td>
+                    <td style="width: 70%;"><span class="type__monospace">These are more less breadcrumbs allowing you to see more of what is going on. Streaming these as well might help with support but probably isn't too helpful for your average User.</span></td>
+                    </tr>
+                    <tr>
+                    <td style="width: 10%;">Bluetooth Information</td>
+                    <td style="width: 20%;">CLEARENT_FEEDBACK_BLUETOOTH</td>
+                    <td style="width: 70%;"><span class="type__monospace">These are informational but associated with only bluetooth</span></td>
+                    </tr>
+                    <tr>
+                    <td style="width: 10%;">Errors</td>
+                    <td style="width: 20%;">CLEARENT_FEEDBACK_ERROR</td>
+                    <td style="width: 70%;"><span class="type__monospace">These are returned when an error occurs. Some errors are related to the transaction. Transactions can fail for various reasons - bad swipes, bad chips, chip is good but reader fails to interact with it, contactless failures, etc. The errors can be communicated back to the User. In some cases the only course of action for the User is to try again and if they are unsuccessful to enter the card manually.</span></td>
+                    </tr>
+                    
+                    <tr>
+                    <td style="width: 10%;">Not classified</td>
+                    <td style="width: 20%;">CLEARENT_FEEDBACK_TYPE_UNKNOWN</td>
+                    <td style="width: 70%;"><span class="type__monospace">This is returned if the IDtech framework returns an error the Clearent framework does not know how to classify</span></td>
+                    </tr>
+               
+                </tbody>
+                </table>
+                
+    </section>
+       <section>
+           <h3>User Actions</h3>
+   <section>
+       <h4>General</h4>
+      
+           <table style="width: 90%;">
+           <thead>
+           <tr>
+           <td style="width: 30%;">Feedback Message</td>
+           <td style="width: 70%;">Notes</td>
+           
+           </tr>
+           </thead>
+           <tbody>
+        
+        
+        <tr>
+        <td style="width: 30%;">PRESS BUTTON ON READER</td>
+        <td style="width: 70%;"><span class="type__monospace">During bluetooth interaction, this message will be sent back every time a transaction is started instructing the User to press the button on the reader.</span></td>
+        </tr>
+        
+        
+           <tr>
+           <td style="width: 30%;">PLEASE SWIPE, TAP, OR INSERT</td>
+           <td style="width: 70%;"><span class="type__monospace">Reader is 3 in 1 mode. User can insert a card with an EMV chip, swipe the card, or if the card has the contactless symbol on it , or a phone is being used, can use the contactless feature by hovering over the contactless side of the reader.</span></td>
+           </tr>
+      
+      <tr>
+      <td style="width: 30%;">INSERT/SWIPE CARD</td>
+      <td style="width: 70%;"><span class="type__monospace">Reader is 2 in 1 mode. The contactless interface has been disabled. User can insert a card with an EMV chip or swipe the card</span></td>
+      </tr>
+      
+          <tr>
+          <td style="width: 30%;">BLUETOOTH CONNECTED</td>
+          <td style="width: 70%;"><span class="type__monospace">Tells the User the bluetooth reader is connected. We could have sent this back under as bluetooth informational but we found a lot of Users wanted this feedback</span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">USE MAGSTRIPE</td>
+          <td style="width: 70%;"><span class="type__monospace">User is told to swipe the card.</span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">CARD INSERTED</td>
+          <td style="width: 70%;"><span class="type__monospace">Card has been inserted.</span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">CARD READ OK, REMOVE CARD</td>
+          <td style="width: 70%;"><span class="type__monospace">The framework has read the card and it is okay to remove the card if it has been inserted.</span></td>
+          </tr>
+          
+
+          <tr>
+          <td style="width: 30%;">TRY MSR AGAIN</td>
+          <td style="width: 70%;"><span class="type__monospace">User attempted to swipe the card but it failed. They should try again.</span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">TAP FAILED. INSERT/SWIPE</td>
+          <td style="width: 70%;"><span class="type__monospace">Contactless interaction failed and the framework determined the User could not use the contactless interface. The framework starts up a new transaction and instructs the User to insert or swipe (contactless interface is disabled)</span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">RETRY TAP</td>
+          <td style="width: 70%;"><span class="type__monospace">The contactless interface failed, maybe because the hovering happened too quickly, so the framework instructs the User to try again.</span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">CARD HAS CHIP. TRY INSERT</td>
+          <td style="width: 70%;"><span class="type__monospace">User swiped a card with an EMV chip. User should get used to inspecting the card first and attempt inserting all EMV chip cards first. The framework will eventually allow a swipe of a chip card, which is considered a 'fallback swipe'</span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">USE CHIP READER</td>
+          <td style="width: 70%;"><span class="type__monospace">Instructs user to try to insert the card</span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">INSERT CARD</td>
+          <td style="width: 70%;"><span class="type__monospace">Instructs user to try to insert the card. Similar to USE CHIP READER.</span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">CARD READ ERROR</td>
+          <td style="width: 70%;"><span class="type__monospace">Something went wrong reading the card. Try again or restart the transaction.</span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">FAILED TO READ CARD. TRY INSERT/SWIPE</td>
+          <td style="width: 70%;"><span class="type__monospace">Something went wrong reading the card. Try insert or swipe.</span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">FALLBACK_TO_SWIPE_REQUEST</td>
+          <td style="width: 70%;"><span class="type__monospace">Something went wrong reading the card. Try swipe.</span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">BAD CHIP, PULL CARD OUT, WAIT FOR GREEN LED, TRY SWIPE</td>
+          <td style="width: 70%;"><span class="type__monospace">Bad EMV chip. The framework will restart a new transaction. Try swiping the card.</span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">FAILED TO START SWIPE. TRY AGAIN BUT THIS TIME PULL CARD OUT WHEN INSTRUCTED</td>
+          <td style="width: 70%;"><span class="type__monospace">Uncommon scenario. The framework failed to process the card. This message 'BAD CHIP, PULL CARD OUT, WAIT FOR GREEN LED, TRY SWIPE' was presented but the user didn't pull the card out. </span></td>
+          </tr>
+          
+          <tr>
+          <td style="width: 30%;">TIMEOUT</td>
+          <td style="width: 70%;"><span class="type__monospace">Transaction has timed out. Try a new transaction.</span></td>
+          </tr>
+
+           </tbody>
+           </table>
+           
+   </section>
+   <section>
+       <h4>Contactless</h4>
+      
+           <table style="width: 90%;">
+           <thead>
+           <tr>
+           <td style="width: 30%;">Feedback Message</td>
+           <td style="width: 70%;">Notes</td>
+           
+           </tr>
+           </thead>
+           <tbody>
+               <tr>
+               <td style="width: 30%;">This type (MSD) of contactless is not supported. Insert card with chip first, then start transaction.</td>
+               <td style="width: 70%;"><span class="type__monospace">THE MSD contactless specification is not supported. Inserting the card first will disable the contactless interface so you can bypass this issue.</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">PRESENT ONE CARD ONLY</td>
+               <td style="width: 70%;"><span class="type__monospace">Two contactless cards have entered the contactless NFC field and the framework is confused. Only present one card at a time.</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">TAP FAILED. INSERT CHIP CARD FIRST BEFORE TRYING AGAIN. IF PHONE TRY AGAIN OR ASK FOR CARD.</td>
+               <td style="width: 70%;"><span class="type__monospace">Attempt to user contactless interface failed. Try inserting the card first before starting the transaction. If it's phone related you can try again but if it fails you'll need to request the User use their back up credit card (or some other form of payment).</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">SEE PHONE</td>
+               <td style="width: 70%;"><span class="type__monospace">The Customer is in the middle of using their phone with the contactless interface and the framework is now asking the them to look at their phone to complete Biometrics or whatever security feature is in place. </span></td>
+               </tr>
+           </tbody>
+           </table>
+    </section>
+   <section>
+       <h4>Audio Jack</h4>
+      
+           <table style="width: 90%;">
+           <thead>
+           <tr>
+           <td style="width: 30%;">Feedback Message</td>
+           <td style="width: 70%;">Notes</td>
+           
+           </tr>
+           </thead>
+           <tbody>
+               <tr>
+               <td style="width: 30%;">PLUGIN AUDIO JACK</td>
+               <td style="width: 70%;"><span class="type__monospace">The framework knows the connection has been configured for audio jack and is instructing the audio jack is plugged into the device.</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">DISCONNECTING BLUETOOTH. PLUG IN AUDIO JACK</td>
+               <td style="width: 70%;"><span class="type__monospace">The framework knows the connection has been configured for audio jack but it's currently connected to a bluetooth reader. Disconnect from bluetooth first then plug the audio jack in.</span></td>
+               </tr>
+
+               <tr>
+               <td style="width: 30%;">UNPLUG AUDIO JACK BEFORE CONNECTING TO BLUETOOTH</td>
+               <td style="width: 70%;"><span class="type__monospace">The framework knows its plugged into an audio jack reader but has been asked to connect to a bluetooth device. Unplug the audio jack reader and try to connect.</span></td>
+               </tr>
+
+               <tr>
+               <td style="width: 30%;">AUDIO JACK CONNECTED</td>
+               <td style="width: 70%;"><span class="type__monospace">The audio jack is now connected.</span></td>
+               </tr>
+
+               <tr>
+               <td style="width: 30%;">AUDIO JACK LOW VOLUME. TURN UP VOLUME AND RECONNECT</td>
+               <td style="width: 70%;"><span class="type__monospace">The volume should be turned up all the way to use the audio jack reader.</span></td>
+               </tr>
+
+           </tbody>
+           </table>
+    </section>
+   <section>
+       <h4>Additional Bluetooth</h4>
+      
+           <table style="width: 90%;">
+           <thead>
+           <tr>
+           <td style="width: 30%;">Feedback Message</td>
+           <td style="width: 70%;">Notes</td>
+           
+           </tr>
+           </thead>
+           <tbody>
+               <tr>
+               <td style="width: 30%;">NEW BLUETOOTH CONNECTION REQUESTED. DISCONNECT CURRENT BLUETOOTH</td>
+               <td style="width: 70%;"><span class="type__monospace">The framework has determined you want to disconnect to a different reader than what is currently connected to</span></td>
+               </tr>
+               <tr>
+               <tr>
+                <td style="width: 30%;">BLUETOOTH DISCONNECTED</td>
+                <td style="width: 70%;"><span class="type__monospace">The bluetooth reader was disconnected.</span></td>
+                </tr>
+               <tr>
+               <td style="width: 30%;">DEVICE NOT CONNECTED</td>
+               <td style="width: 70%;"><span class="type__monospace">The framework has an issue with the device.</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">PAYMENT REQUEST AND CONNECTION REQUIRED</td>
+               <td style="width: 70%;"><span class="type__monospace">The framework got itself into a state where either something happened with the connection of the payment request itself could not be determined. Cancel the transaction and try again.</span></td>
+               </tr>
+
+           </tbody>
+           </table>
+    </section>
+   <section>
+       <h4>Uncommon</h4>
+      
+           <table style="width: 90%;">
+           <thead>
+           <tr>
+           <td style="width: 30%;">Feedback Message</td>
+           <td style="width: 70%;">Notes</td>
+           
+           </tr>
+           </thead>
+           <tbody>
+               <tr>
+               <td style="width: 30%;">DEVICE NOT CONNECTED</td>
+               <td style="width: 70%;"><span class="type__monospace">The framework has an issue with the device.</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">PAYMENT REQUEST AND CONNECTION REQUIRED</td>
+               <td style="width: 70%;"><span class="type__monospace">The framework got itself into a state where either something happened with the connection of the payment request itself could not be determined. Cancel the transaction and try again.</span></td>
+               </tr>
+
+           </tbody>
+           </table>
+
+   
+    </section>
+    
+    <section>
+        <h3>Informational</h3>
+        <section>
+            <h4>General</h4>
+            <table style="width: 90%;">
+            <thead>
+            <tr>
+            <td style="width: 30%;">Feedback Message</td>
+            <td style="width: 70%;">Notes</td>
+            
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td style="width: 30%;">SEARCHING FOR POWERED ON BLUETOOTH READERS</td>
+                <td style="width: 70%;"><span class="type__monospace">Bluetooth search has been started and the framework is looking for readers.</span></td>
+                </tr>
+                <tr>
+                <td style="width: 30%;">CARD READ OK</td>
+                <td style="width: 70%;"><span class="type__monospace">Card was read okay.</span></td>
+                </tr>
+                
+                <tr>
+                <td style="width: 30%;">CARD SECURED</td>
+                <td style="width: 70%;"><span class="type__monospace">The card data has been sent to Clearent's servers and the transaction token (JWT) has been returned for your App to process.</span></td>
+                </tr>
+                <tr>
+                <td style="width: 30%;">GOING ONLINE</td>
+                <td style="width: 70%;"><span class="type__monospace">The framework is about to call Clearent to secure the card.</span></td>
+                </tr>
+                <tr>
+                <td style="width: 30%;">DECLINED RECEIPT SENT, REMOVE CARD</td>
+                <td style="width: 70%;"><span class="type__monospace">When an email address is provided to the framework at transaction time, if the transaction is declined the user will be sent an email describing the transaction.</span></td>
+                </tr>
+                <tr>
+                <td style="width: 30%;">Device Firmware version not found</td>
+                <td style="width: 70%;"><span class="type__monospace">The framework could not communicate with the reader at a given point to to identify its firmware version. This should only impact readers on versions .151 or older and the contactless feature.</span></td>
+                </tr>
+                <tr>
+                <td style="width: 30%;">Device Kernel Version Unknown</td>
+                <td style="width: 70%;"><span class="type__monospace">Kernel version could not be identified (rare).</span></td>
+                </tr>
+                <tr>
+                <td style="width: 30%;">Reader configured and ready</td>
+                <td style="width: 70%;"><span class="type__monospace">This is telling you the reader is ready for use. The mention of the reader being configured is a leftover from our initial release that would configure the reader prior to starting a transaction. (A flow that is now discouraged).</span></td>
+                </tr>
+                <tr>
+                <td style="width: 30%;">TRANSACTION STARTED</td>
+                <td style="width: 70%;"><span class="type__monospace">Transaction started</span></td>
+                </tr>
+                <tr>
+                <td style="width: 30%;">TRANSACTION FAILED</td>
+                <td style="width: 70%;"><span class="type__monospace">Transaction failed</span></td>
+                </tr>
+                <tr>
+                <td style="width: 30%;">CHIP NOT RECOGNIZED, PULL CARD OUT, WAIT FOR GREEN LED, TRY SWIPE</td>
+                <td style="width: 70%;"><span class="type__monospace">Try swipe again when a bad chip is recognized. TBD - might be a duplicate message of a User Action.</span></td>
+                </tr>
+            
+                <tr>
+                <td style="width: 30%;">Device connected. Waiting for configuration to complete...</td>
+                <td style="width: 70%;"><span class="type__monospace">Try swipe again when a bad chip is recognized. TBD - might be a duplicate message of a User Action.</span></td>
+                </tr>
+            
+            </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h4>Contactless</h4>
+            <table style="width: 90%;">
+            <thead>
+            <tr>
+            <td style="width: 30%;">Feedback Message</td>
+            <td style="width: 70%;">Notes</td>
+            
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td style="width: 30%;">AMOUNT IS OVER MAXIMUM LIMIT ALLOWED FOR TAP</td>
+                <td style="width: 70%;"><span class="type__monospace">There is a maximum amount allowed using the contactless interface. TBD if this should be a User Action</span></td>
+                </tr>
+
+            </tbody>
+            </table>
+        </section>
+        <section>
+            <h4>Audio Jack</h4>
+            <table style="width: 90%;">
+            <thead>
+            <tr>
+            <td style="width: 30%;">Feedback Message</td>
+            <td style="width: 70%;">Notes</td>
+            
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td style="width: 30%;">AUDIO JACK ATTACHED</td>
+                <td style="width: 70%;"><span class="type__monospace">Audio jack attached</span></td>
+                </tr>
+                <tr>
+                <td style="width: 30%;">CONNECTING AUDIO JACK</td>
+                <td style="width: 70%;"><span class="type__monospace">Framework is in the process of connecting to the audio jack</span></td>
+                </tr>
+                <tr>
+                <td style="width: 30%;">AUDIO JACK REMOVED</td>
+                <td style="width: 70%;"><span class="type__monospace">Audio jack has been removed</span></td>
+                </tr>
+                <tr>
+                <td style="width: 30%;"> AUDIO JACK DISCONNECTED</td>
+                <td style="width: 70%;"><span class="type__monospace">Audio jack was disconnected</span></td>
+                </tr>
+                <tr>
+                <td style="width: 30%;">Powering up reader...</td>
+                <td style="width: 70%;"><span class="type__monospace">Audio jack is powering up</span></td>
+                </tr>
+
+            </tbody>
+            </table>
+        </section>
+    </section>
+   <section>
+       <h3>Errors</h3>
+       <section>
+           <h4>General</h4>
+           <table style="width: 90%;">
+           <thead>
+           <tr>
+           <td style="width: 30%;">Feedback Message</td>
+           <td style="width: 70%;">Notes</td>
+           
+           </tr>
+           </thead>
+           <tbody>
+               <tr>
+               <td style="width: 30%;">Card read error</td>
+               <td style="width: 70%;"><span class="type__monospace">Card read error. Try transaction again if framework did not restart one for you (you can tell by the other messages the framework sends back)</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;"> CVM Unsupported. Insert card with chip first, then start transaction. Or try swipe.</td>
+               <td style="width: 70%;"><span class="type__monospace">Cardholder verifification method unsupported. Try inserting or swiping.</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">Card declined</td>
+               <td style="width: 70%;"><span class="type__monospace">This is an offline decline and should be rare. Try manually entering the card.</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">TIME OUT</td>
+               <td style="width: 70%;"><span class="type__monospace">Transaction timed out (deprecated message).</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">TIMEOUT</td>
+               <td style="width: 70%;"><span class="type__monospace">The transaction timed out. Try again</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">Create Transaction Token Failed</td>
+               <td style="width: 70%;"><span class="type__monospace">Card was read successfully but at some point the card could not be secured and the transation token (JWT) could not be sent back to app. Make sure wifi is enabled and try transaction again.</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">Sending Declined Receipt Failed</td>
+               <td style="width: 70%;"><span class="type__monospace">When an email address is provided and the transaction is declined the framework will attempt to contact Clearent's servers to request an email be sent to the customer. This is telling you the process failed.This is independent of the processing of the transaction but could be failing for similar reasons such as slow/no internet connection.</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">Failed to read card</td>
+               <td style="width: 70%;"><span class="type__monospace">Simmiar to Card Read Error. Card failed to read. If the framework has not restarted the transaction for you then you'll have to restart a transaction.</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">DISABLE CONFIGURATION REQUEST TO RUN TRANSACTION</td>
+               <td style="width: 70%;"><span class="type__monospace"></span>An attempt was made to start a transaction when configuration was running.</td>
+               </tr>
+              
+              <tr>
+              <td style="width: 30%;">READER NOT CONFIGURED</td>
+              <td style="width: 70%;"><span class="type__monospace">Framework determined the reader is not configured. (This isn't a comprehensive check but could indicate an issue)</span></td>
+              </tr>
+              <tr>
+              <td style="width: 30%;">TRANSACTION FAILED</td>
+              <td style="width: 70%;"><span class="type__monospace">Duplicate of the User Action. It means the transaction failed. Try another transaction.</span></td>
+              </tr>
+              <tr>
+              <td style="width: 30%;">UNABLE TO GO ONLINE</td>
+              <td style="width: 70%;"><span class="type__monospace">Could not contact Clearent servers. This usually indicates a slow/no internet connection. Check wifi and try again.</span></td>
+              </tr>
+              <tr>
+              <td style="width: 30%;">PAYMENT REQUEST NOT FOUND</td>
+              <td style="width: 70%;"><span class="type__monospace">This indicates the framework was put in a bad state and could not determine what the payment request was. Try transaction again.</span></td>
+              </tr>
+              <tr>
+              <td style="width: 30%;">TERMINATED</td>
+              <td style="width: 70%;"><span class="type__monospace">This is an IDTech specific message we pass back. It indicates from the IDTech framework perspective the transaction could not succeed and was terminated (cancelled). Sometimes this message is not true when it comes to processing swipes or contactless transactions. Our part of the framework will restart a transaction in a different state depending on the scenario (example is restarting in '2 in 1' mode and disabling the contactless interface when we know the IDTech framework has told us contactless will not work). Because of the nature of the asynchronous messaging these are are still sent back.</span></td>
+              </tr>
+              <tr>
+              <td style="width: 30%;">TERMINATE</td>
+              <td style="width: 70%;"><span class="type__monospace">Same as TERMINATED but deprecated.</span></td>
+              </tr>
+              <tr>
+              <td style="width: 30%;">CARD UNSUPPORTED</td>
+              <td style="width: 70%;"><span class="type__monospace">The IDTech framework has determined the card is unsupported. Try manually entering the card.</span></td>
+              </tr>
+              <tr>
+              <td style="width: 30%;">UNABLE TO GO ONLINE, FAILED TO SEND DECLINED RECEIPT</td>
+              <td style="width: 70%;"><span class="type__monospace">When an email address is provided and the transaction is declined the framework will attempt to contact Clearent's servers to request an email be sent to the customer. This is telling you the process failed.This is independent of the processing of the transaction but could be failing for similar reasons such as slow/no internet connection.</span></td>
+              </tr>
+
+
+           </tbody>
+           </table>
+       </section>
+       <section>
+           <h4>Bluetooth</h4>
+           <table style="width: 90%;">
+           <thead>
+           <tr>
+           <td style="width: 30%;">Feedback Message</td>
+           <td style="width: 70%;">Notes</td>
+           
+           </tr>
+           </thead>
+           <tbody>
+               <tr>
+               <td style="width: 30%;">Bluetooth friendly name required</td>
+               <td style="width: 70%;"><span class="type__monospace">A request to connect to a bluetooth reader was made but no friendly name was provided.</span></td>
+               </tr>
+              
+
+           </tbody>
+           </table>
+       </section>
+       <section>
+           <h4>Contactless</h4>
+           <table style="width: 90%;">
+           <thead>
+           <tr>
+           <td style="width: 30%;">Feedback Message</td>
+           <td style="width: 70%;">Notes</td>
+           
+           </tr>
+           </thead>
+           <tbody>
+               <tr>
+               <td style="width: 30%;">Contactless not supported. Insert card with chip first, then start transaction</td>
+               <td style="width: 70%;"><span class="type__monospace">You have contactless disabled. Insert card first to process.</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">TAP FAILED</td>
+               <td style="width: 70%;"><span class="type__monospace">Contactless failed. The framework might start up a tranasaction so monitor for related messages. If it does not start a new transaction and try inserting the card or if the phone was used ask the Customer for a back up payment method.</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">CARD BLOCKED</td>
+               <td style="width: 70%;"><span class="type__monospace">This should only come back during contactless interaction. The card cannot be used for some unknown reason. Try manually entering the card.</span></td>
+               </tr>
+               <tr>
+               <td style="width: 30%;">CARD EXPIRED</td>
+               <td style="width: 70%;"><span class="type__monospace">This should only come back during contactless interaction. Try manually entering the card.</span></td>
+               </tr>
+
+
+           </tbody>
+           </table>
+       </section>
+   </section>
+   
+   
+</div>
+<script src="javascripts/scale.fix.js"></script>
+
+</body>
+</html>

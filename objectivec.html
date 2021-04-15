@@ -12,6 +12,12 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
   </head>
+  <style>
+      pre {
+        white-space: pre-wrap;
+        word-break: keep-all
+      }
+      </style>
   <body>
     <div class="wrapper">
       <header>
@@ -23,6 +29,7 @@
             <a href="bluetooth.html">Bluetooth</a>
             <a href="dependencymanagement.html">Dependency Management</a>
             <a class="active" href="objectivec.html">Objective C Example</a>
+            <a href="feedback.html">Feedback</a>
         </menu>
 
       </header>
@@ -42,9 +49,11 @@
     
 
     <p>Implement the public delegate - Clearent_Public_IDTech_VP3300_Delegate</p>
+    
     <pre><code>
         @interface ViewController : UIViewController&lt;UIAlertViewDelegate,Clearent_Public_IDTech_VP3300_Delegate, UIActionSheetDelegate,MFMailComposeViewControllerDelegate&gt;
     </code></pre>
+    
     
     <p>Implement the ClearentManualEntryDelegate. This is used as a back up in case the reader cannot interact with the card.</p>
     

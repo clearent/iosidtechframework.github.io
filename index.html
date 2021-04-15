@@ -23,6 +23,7 @@
             <a href="bluetooth.html">Bluetooth</a>
             <a href="dependencymanagement.html">Dependency Management</a>
             <a href="objectivec.html">Objective C Example</a>
+            <a href="feedback.html">Feedback</a>
         </menu>        
     </header>
     <section>
@@ -35,14 +36,14 @@
 
         <h3>How it works</h3>
 
-        <p>IDTech provides a framework for interacting with their reader. Clearent has wrapped the framework so it can handle the sensitive card data as well
+        <p>Clearent has 'wrapped' the IDTech framework so we can handle the sensitive card data as well
         as provide a few extra methods for easier integration. The framework does not run the payment. It only secures the card data.
         </p>
         
         
         <h3>Recommended Implementation</h3>
         
-        <p>The framework provides many capabilities but we have found the best implementation to be:</p>
+        <p>The framework provides many capabilities and because of these does support different flows. We have found the best implementation to be:</p>
         
         <ol>
             <li>Identify the reader first. With all new technologies the challenge is to get the User up to speed on its use. Even though the framework supports searching for the bluetooth reader and running the transaction in the same flow, we recommend separating out the two concerns so the experience at the time of running a transaction , while the customer is present, is optimized. In your app, provide a separate settings section allowing the User to set up the reader. Let them initiate a bluetooth search and select from one or more found readers. Then save the bluetooth info they selected.
@@ -61,6 +62,7 @@
         </ol>
         
         <h3>Bluetooth Search Flow</h3>
+        <p>Follow this from your settings to identify the reader</p>
         <ol>
             <li>Start a bluetooth search.
             </li>
@@ -73,8 +75,9 @@
         </ol>
         
         <h3>Transaction Flow</h3>
+        <p>With a reader identified the transaction flow is simplified.</p>
         <ol>
-            <li>Start a transaction with a previously identified reader.
+            <li>Start a transaction with a previously identified reader using the startTransaction method that allows you to provide the payment request and the connection information.
             </li>
             <li>Monitor for feedback from framework and display to User.
             </li>
@@ -83,8 +86,6 @@
             <li>Present transaction token to Clearent Mobile Gateway when ready to run a payment.
             </li>
         </ol>
-        
-
     </section>
     <footer>
         <p>This project is maintained by <a href="https://github.com/Clearent">Clearent</a></p>
