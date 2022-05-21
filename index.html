@@ -15,52 +15,54 @@
 <body>
 <div class="wrapper">
     <header>
-        <h1>IDTech iOS Framework</h1>
+        <h1>Clearent iOS Framework for IDTech VP3300</h1>
         <p>Overview</p>
 
         <menu>
             <a class="active" href="index.html">Overview</a>
             <a href="bluetooth.html">Bluetooth</a>
-            <a href="dependencymanagement.html">Dependency Management</a>
+            <a href="dependencies.html">Dependencies</a>
+            <a href="dependencymanagement.html">Package Management</a>
             <a href="objectivec.html">Objective C Example</a>
             <a href="feedback.html">Feedback</a>
-        </menu>        
+        </menu>
     </header>
     <section>
-        <h3>IDTech iOS Framework Overview</h3>
+        <h3>Overview</h3>
 
-        <p>The IDTech iOS Framework gives your iOS App the ability to interact with an IDTech VP3300 Bluetooth credit card reader. The framework
-        handles the credit card data coming from the reader on your behalf by sending it to our servers and returning a secured JWT (json web token)
-        which you can present later to our mobile gateway endpoint for payment processing.
+        <p>The Clearent framework is an opinionated framework utilizing the IDTech iOS framework to read credit card data using the <a href="https://idtechproducts.com/products/mobile-payment-solutions/vp3300/"" target="_blank">VP3300</a>.
+          Other IDTech framework capabilities remain accessible in case our recommended flows do not meet your needs.
         </p>
 
         <h3>How it works</h3>
 
-        <p>Clearent has 'wrapped' the IDTech framework so we can handle the sensitive card data as well
-        as provide a few extra methods for easier integration. The framework does not run the payment. It only secures the card data.
+        <p>Your app will connect to the VP3300 using an implementation of Apple's bluetooth solution included in the IDTech framework. Once connected, messages sent back to your
+          App from the framework will guide the User to interact with the reader. A successful read of the card will instruct our framework to send the credit card data securely
+          to our server. We will package this data in the form of an encrypted JWT (Json Web Token) and send it back to you via a framework callback. You can then present this
+          JWT to our mobile gateway for payment processing.
         </p>
-        
-        
-        <h3>Recommended Implementation</h3>
-        
-        <p>The framework provides many capabilities and because of these does support different flows. We have found the best implementation to be:</p>
-        
-        <ol>
-            <li>Identify the reader first. With all new technologies the challenge is to get the User up to speed on its use. Even though the framework supports searching for the bluetooth reader and running the transaction in the same flow, we recommend separating out the two concerns so the experience at the time of running a transaction , while the customer is present, is optimized. In your app, provide a separate settings section allowing the User to set up the reader. Let them initiate a bluetooth search and select from one or more found readers. Then save the bluetooth info they selected.
-            </li>
-            <li>Display the status of the reader connection.
-            </li>
-            <li>Provide the User with an interface to start the transaction.
-            </li>
-            <li>Provide the User with an interface to cancel the transaction.
-            </li>
-            <li>Display messages to the User coming back from the framework (feedback callback).
-            </li>
-            <li>From your settings area provide the ability to force a bluetooth disconnect.
-            </li>
 
-        </ol>
-        
+
+
+        <h3>Recommended Implementation</h3>
+
+        <p>The implementation has 2 areas to focus on:</p>
+
+        <ul data-aura-rendered-by="119:210;a"><li style=""><span style="font-size: 12px;">Reader Management</span></li><li style=""><span style="font-size: 12px;">Reader Interaction</span></li></ul>
+
+        <p>Reader management involves identifying the reader to be used and saving off the reader info to contribute to a better User experience at transaction time. We recommend focusing on this separately
+        from the transaction flow. If you can place this management area in your settings/preference section it will contribute to the User's first time experience as it relates more to a set up/configuration process.</p>
+
+        <p>In this management section, give the User the ability to start a bluetooth scan. Show them the results of the scan and allow them to select a reader. Connect to the selected reader. They will have the reader and will be able to confirm the connection
+        by observing the quick flashing bluelight. If they select a reader from the list and do not observe a connection to the reader in hand, they should be given the ability to force a disconnect and try another reader from the list. Always show the name of the reader and its connection status.</p>
+
+        <p>The User should be aware they will need to press the button on the reader to take it out of sleep mode. It's important to train them early on this detail. Since the reader is following the BLE ("Bluetooth Low Energy") specification it will want to conserve energy.
+        </p>
+
+        <p>Now that your app knows what reader it will always connect with it can focus on reader interaction. When you've determined it's time to interact with the reader, you can start a transaction using the framework.
+        The framework provides feedback, notably the User Actions. These should be shown to the User in case the framework
+      is instructing them to take an action. An example of this is if they inserted a chip card backwards. </p>
+
         <h3>Bluetooth Search Flow</h3>
         <p>Follow this from your settings to identify the reader</p>
         <ol>
@@ -73,7 +75,7 @@
             <li>Record the selected reader for future use.
             </li>
         </ol>
-        
+
         <h3>Transaction Flow</h3>
         <p>With a reader identified the transaction flow is simplified.</p>
         <ol>
