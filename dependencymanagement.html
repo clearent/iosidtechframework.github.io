@@ -38,6 +38,30 @@
         Use our latest pod <a href="https://github.com/clearent/ClearentIdtechIOSFrameworkPod/releases/tag/4.0.9">4.0.9</a>
         </p>
 
+
+       <h4>Extra configuration</h4>
+
+        <p>
+        Our framework exposes IDTech capabilities and leverages its return codes. For this reason some IDTech headers are exposed. You need to adjust
+        a couple of build settings related to 'non modular' issues. We left this set up out of the pod so you could review this and make the determination
+        if this would impact your project. We do not believe it will but there could be a special case.
+        </p>
+
+        <p>For both objective c and swift apps set Allow Non-modular includes In Framework Modules to Yes </p>
+
+        <img src="images/clangbuildsetting.png" alt="CLANG Non Modular Build setting">
+
+</br>
+</br>
+        <p>For Swift apps add this to OTHER_SWIFT_FLAGS</p>
+
+          <code>-Xcc -Wno-error=non-modular-include-in-framework-module</code>
+
+        </br>
+        </br>
+
+        <img src="images/switchflag.png" alt="CLANG Non Modular Build setting">
+
         <h3>Carthage</h3>
 
         <ol>
